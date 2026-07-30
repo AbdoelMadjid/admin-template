@@ -18,35 +18,40 @@
                 </div>
 
                 <div class="card p-4 rounded-4">
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" novalidate id="loginForm">
 
                         @csrf
 
                         <div class="mb-3">
                             <label for="userEmail" class="form-label">Email address <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="email" class="form-control" id="userEmail" name="email" value="inspinia@user.com">
+                                <input type="text" class="form-control @error('email') is-invalid @enderror" id="userEmail" name="email" value="{{ old('email') }}" placeholder="Masukkan email">
                             </div>
+                            <div class="text-danger fs-13 mt-1 d-none" id="clientEmailError"></div>
                             @if ($errors->get('email'))
-                                <ul class="list-unstyled ps-0 mt-1">
+                                <div class="text-danger fs-13 mt-1" id="serverEmailError">
                                     @foreach ((array) $errors->get('email') as $message)
-                                        <li class="text-danger mb-1">{{ $message }}</li>
+                                        <div>{{ $message }}</div>
                                     @endforeach
-                                </ul>
+                                </div>
                             @endif
                         </div>
 
                         <div class="mb-3">
                             <label for="userPassword" class="form-label">Password <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="password" class="form-control" id="userPassword" name="password" value="password">
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" id="userPassword" name="password" placeholder="Masukkan password">
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Tampilkan/Sembunyikan Password">
+                                    <i class="ti ti-eye-off" id="togglePasswordIcon"></i>
+                                </button>
                             </div>
+                            <div class="text-danger fs-13 mt-1 d-none" id="clientPasswordError"></div>
                             @if ($errors->get('password'))
-                                <ul class="list-unstyled ps-0 mt-1">
+                                <div class="text-danger fs-13 mt-1" id="serverPasswordError">
                                     @foreach ((array) $errors->get('password') as $message)
-                                        <li class="text-danger mb-1">{{ $message }}</li>
+                                        <div>{{ $message }}</div>
                                     @endforeach
-                                </ul>
+                                </div>
                             @endif
                         </div>
 
@@ -79,4 +84,100 @@
 @endsection
 
 @section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Toggle Password Visibility (Eye Icon)
+    const togglePasswordBtn = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('userPassword');
+    const passwordIcon = document.getElementById('togglePasswordIcon');
+
+    if (togglePasswordBtn && passwordInput && passwordIcon) {
+        togglePasswordBtn.addEventListener('click', function () {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            passwordIcon.className = isPassword ? 'ti ti-eye' : 'ti ti-eye-off';
+        });
+    }
+
+    // 2. Real-time Email & Password validation
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('userEmail');
+    const clientEmailError = document.getElementById('clientEmailError');
+    const serverEmailError = document.getElementById('serverEmailError');
+
+    const clientPasswordError = document.getElementById('clientPasswordError');
+    const serverPasswordError = document.getElementById('serverPasswordError');
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    function validateEmailRealtime() {
+        const valEmail = emailInput.value.trim();
+
+        if (serverEmailError) serverEmailError.style.display = 'none';
+
+        if (valEmail === '') {
+            clientEmailError.textContent = 'Email wajib diisi.';
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else if (!emailRegex.test(valEmail)) {
+            clientEmailError.textContent = "Format email tidak valid.";
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else {
+            clientEmailError.classList.add('d-none');
+            emailInput.classList.remove('is-invalid');
+        }
+    }
+
+    if (emailInput) {
+        // Validasi real-time saat mengetik
+        emailInput.addEventListener('input', validateEmailRealtime);
+    }
+
+    if (passwordInput) {
+        passwordInput.addEventListener('input', function () {
+            if (serverPasswordError) serverPasswordError.style.display = 'none';
+            if (passwordInput.value !== '') {
+                clientPasswordError.classList.add('d-none');
+                passwordInput.classList.remove('is-invalid');
+            }
+        });
+    }
+
+    if (loginForm && emailInput) {
+        loginForm.addEventListener('submit', function (e) {
+            const valEmail = emailInput.value.trim();
+            const valPassword = passwordInput ? passwordInput.value : '';
+
+            if (serverEmailError) serverEmailError.style.display = 'none';
+            if (serverPasswordError) serverPasswordError.style.display = 'none';
+
+            let hasError = false;
+
+            if (valEmail === '') {
+                clientEmailError.textContent = 'Email wajib diisi.';
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            } else if (!emailRegex.test(valEmail)) {
+                clientEmailError.textContent = "Format email tidak valid.";
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (passwordInput && valPassword === '') {
+                clientPasswordError.textContent = 'Password wajib diisi.';
+                clientPasswordError.classList.remove('d-none');
+                passwordInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
 @endsection

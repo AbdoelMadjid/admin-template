@@ -28,18 +28,27 @@
                         <h4 class="fw-bold">Forgot Password ? | IN++</h4>
                         <p class="text-muted auth-sub-text mx-auto">Enter your email address and we'll send you a link to reset your password.</p>
 
-                        <form class="mt-4">
+                        @if (session('status'))
+                            <div class="alert alert-success mb-3 fs-13" role="alert">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('password.email') }}" novalidate id="forgotPasswordForm" class="mt-4 text-start">
+                            @csrf
+
                             <div class="mb-3">
                                 <div class="input-group">
-                                    <input type="email" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light" id="userEmail" placeholder="Enter email" required>
+                                    <input type="text" class="form-control py-2 px-3 bg-light bg-opacity-40 border-light @error('email') is-invalid @enderror" id="userEmail" name="email" value="{{ old('email') }}" placeholder="Masukkan email">
                                 </div>
-                            </div>
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input form-check-input-light fs-14" type="checkbox" id="termAndPolicy">
-                                    <label class="form-check-label" for="termAndPolicy">Agree the Terms & Policy</label>
-                                </div>
+                                <div class="text-danger fs-13 mt-1 d-none" id="clientEmailError"></div>
+                                @if ($errors->get('email'))
+                                    <div class="text-danger fs-13 mt-1" id="serverEmailError">
+                                        @foreach ((array) $errors->get('email') as $message)
+                                            <div>{{ $message }}</div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="d-grid">
@@ -66,4 +75,63 @@
 @endsection
 
 @section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const emailInput = document.getElementById('userEmail');
+    const clientEmailError = document.getElementById('clientEmailError');
+    const serverEmailError = document.getElementById('serverEmailError');
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    function validateEmailRealtime() {
+        const valEmail = emailInput.value.trim();
+
+        if (serverEmailError) serverEmailError.style.display = 'none';
+
+        if (valEmail === '') {
+            clientEmailError.textContent = 'Email wajib diisi.';
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else if (!emailRegex.test(valEmail)) {
+            clientEmailError.textContent = "Format email tidak valid.";
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else {
+            clientEmailError.classList.add('d-none');
+            emailInput.classList.remove('is-invalid');
+        }
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', validateEmailRealtime);
+    }
+
+    if (forgotPasswordForm && emailInput) {
+        forgotPasswordForm.addEventListener('submit', function (e) {
+            const valEmail = emailInput.value.trim();
+
+            if (serverEmailError) serverEmailError.style.display = 'none';
+
+            let hasError = false;
+
+            if (valEmail === '') {
+                clientEmailError.textContent = 'Email wajib diisi.';
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            } else if (!emailRegex.test(valEmail)) {
+                clientEmailError.textContent = "Format email tidak valid.";
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
 @endsection

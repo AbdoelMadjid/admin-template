@@ -18,20 +18,27 @@
                 </div>
 
                 <div class="card p-4 rounded-4">
-                    <form method="POST" action="{{ route('password.email') }}">
+                    @if (session('status'))
+                        <div class="alert alert-success mb-3 fs-13" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('password.email') }}" novalidate id="forgotPasswordForm">
                         @csrf
 
                         <div class="mb-3">
-                            <label for="email" class="form-label">Email address <span class="text-danger">*</span></label>
+                            <label for="userEmail" class="form-label">Email address <span class="text-danger">*</span></label>
                             <div class="input-group">
-                                <input type="email" class="form-control" id="email" name="email" placeholder="you@example.com" required>
+                                <input type="text" class="form-control @error('email') is-invalid @enderror" id="userEmail" name="email" value="{{ old('email') }}" placeholder="Masukkan email">
                             </div>
+                            <div class="text-danger fs-13 mt-1 d-none" id="clientEmailError"></div>
                             @if ($errors->get('email'))
-                                <ul class="list-unstyled ps-0 mt-1">
+                                <div class="text-danger fs-13 mt-1" id="serverEmailError">
                                     @foreach ((array) $errors->get('email') as $message)
-                                        <li class="text-danger mb-1">{{ $message }}</li>
+                                        <div>{{ $message }}</div>
                                     @endforeach
-                                </ul>
+                                </div>
                             @endif
                         </div>
 
@@ -57,4 +64,63 @@
 @endsection
 
 @section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const emailInput = document.getElementById('userEmail');
+    const clientEmailError = document.getElementById('clientEmailError');
+    const serverEmailError = document.getElementById('serverEmailError');
+
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    function validateEmailRealtime() {
+        const valEmail = emailInput.value.trim();
+
+        if (serverEmailError) serverEmailError.style.display = 'none';
+
+        if (valEmail === '') {
+            clientEmailError.textContent = 'Email wajib diisi.';
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else if (!emailRegex.test(valEmail)) {
+            clientEmailError.textContent = "Format email tidak valid.";
+            clientEmailError.classList.remove('d-none');
+            emailInput.classList.add('is-invalid');
+        } else {
+            clientEmailError.classList.add('d-none');
+            emailInput.classList.remove('is-invalid');
+        }
+    }
+
+    if (emailInput) {
+        emailInput.addEventListener('input', validateEmailRealtime);
+    }
+
+    if (forgotPasswordForm && emailInput) {
+        forgotPasswordForm.addEventListener('submit', function (e) {
+            const valEmail = emailInput.value.trim();
+
+            if (serverEmailError) serverEmailError.style.display = 'none';
+
+            let hasError = false;
+
+            if (valEmail === '') {
+                clientEmailError.textContent = 'Email wajib diisi.';
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            } else if (!emailRegex.test(valEmail)) {
+                clientEmailError.textContent = "Format email tidak valid.";
+                clientEmailError.classList.remove('d-none');
+                emailInput.classList.add('is-invalid');
+                hasError = true;
+            }
+
+            if (hasError) {
+                e.preventDefault();
+            }
+        });
+    }
+});
+</script>
 @endsection
