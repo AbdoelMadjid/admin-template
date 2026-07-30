@@ -1,61 +1,131 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Admin Template - Laravel 12
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Admin Template berbasis **Laravel 12** yang dilengkapi dengan berbagai komponen UI modern, manajemen Role & Permission (Spatie), serta aset pendukung seperti DataTables, FullCalendar, ApexCharts, dan lainnya.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Prasyarat Sistem
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sebelum melakukan instalasi, pastikan sistem Anda sudah memenuhi kebutuhan berikut:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP**: `>= 8.2` (dengan ekstensi `pdo`, `mbstring`, `openssl`, `bcmath`, `curl`, `xml`, `ctype`, `json`, `fileinfo`)
+- **Composer**: `>= 2.x`
+- **Node.js**: `>= 18.x` & **NPM** (atau **Yarn**)
+- **Database**: MySQL / MariaDB / PostgreSQL / SQLite
+- **Web Server / Dev Environment**: Laragon, XAMPP, Herd, atau PHP Built-in Server
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🚀 Langkah-langkah Instalasi
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Ikuti langkah-langkah berikut secara berurutan saat melakukan `clone` proyek ke komputer/server baru untuk menghindari error:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Clone Repository
+Buka terminal / Command Prompt / Git Bash, lalu jalankan perintah berikut:
+```bash
+git clone https://github.com/AbdoelMadjid/admin-template.git
+cd admin-template
+```
 
-## Laravel Sponsors
+### 2. Install Dependensi PHP (Composer)
+Jalankan perintah berikut untuk mengunduh semua library PHP yang dibutuhkan:
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Install Dependensi Frontend (Node.js & Vite)
+Jalankan perintah berikut untuk menginstall library JavaScript/CSS:
+```bash
+npm install
+```
+*(atau jika menggunakan yarn: `yarn install`)*
 
-### Premium Partners
+### 4. Salin File Konfigurasi `.env`
+Duplikat file `.env.example` menjadi `.env`:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **Linux / macOS / Git Bash:**
+  ```bash
+  cp .env.example .env
+  ```
+- **Windows Command Prompt (CMD):**
+  ```cmd
+  copy .env.example .env
+  ```
+- **Windows PowerShell:**
+  ```powershell
+  Copy-Item .env.example .env
+  ```
 
-## Contributing
+### 5. Generate Application Key
+Jalankan perintah berikut untuk menghasilkan kunci enkripsi aplikasi:
+```bash
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 6. Konfigurasi Database
+Buat database baru di MySQL/Database Server Anda (misal nama databasenya: `admin-template`).
 
-## Code of Conduct
+Buka file `.env` dan sesuaikan pengaturan database sesuai dengan lingkungan lokal Anda:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=admin-template
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 7. Jalankan Migrasi & Seeder Database
+Jalankan migrasi tabel beserta seeder bawaan (Role, Permission, dan akun default):
+```bash
+php artisan migrate --seed
+```
 
-## Security Vulnerabilities
+> **Akun Default Seeder:**
+> - **Email:** `inspinia@user.com`
+> - **Password:** `password`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 8. Buat Tautan Storage (Storage Link)
+Hubungkan folder `storage` ke folder `public` agar file upload/media dapat diakses:
+```bash
+php artisan storage:link
+```
 
-## License
+### 9. Build / Jalankan Asset Frontend (Vite)
+Untuk mode pengembangan (*development mode*):
+```bash
+npm run dev
+```
+*(Perintah ini akan menjalankan Vite Dev Server)*
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Atau jika ingin mem-build asset untuk produksi (*production*):
+```bash
+npm run build
+```
+
+### 10. Jalankan Server Laravel
+Buka terminal baru dan jalankan server lokal Laravel:
+```bash
+php artisan serve
+```
+
+Akses aplikasi di browser melalui URL:
+`http://127.0.0.1:8000` (atau sesuai konfigurasi Laragon/Virtual Host Anda).
+
+---
+
+## 🛠️ Tips & Penanganan Masalah (Troubleshooting)
+
+| Masalah / Error | Solusi |
+| :--- | :--- |
+| **HTTP 500 / `No application encryption key has been specified`** | Jalankan `php artisan key:generate` dan bersihkan cache dengan `php artisan config:clear`. |
+| **Asset CSS/JS tidak muncul atau berantakan** | Pastikan `npm install` sudah dijalankan dan `npm run dev` sedang berjalan (atau sudah jalankan `npm run build`). |
+| **SQLSTATE[HY000] [1049] Unknown database** | Buat terlebih dahulu database di MySQL sesuai nama yang ada pada `DB_DATABASE` di file `.env`. |
+| **Permission Denied (Linux / macOS)** | Berikan akses tulis pada folder `storage` dan `bootstrap/cache`:<br>`chmod -R 775 storage bootstrap/cache` |
+
+---
+
+## 📄 Lisensi
+
+Proyek ini berada di bawah lisensi [MIT License](LICENSE).
+
