@@ -82,7 +82,7 @@ php artisan migrate --seed
 ```
 
 > **Akun Default Seeder:**
-> - **Email:** `inspinia@user.com`
+> - **Email:** `administrator@gmail.com`
 > - **Password:** `password`
 
 ### 8. Buat Tautan Storage (Storage Link)
